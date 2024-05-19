@@ -4,9 +4,12 @@ from bs4 import BeautifulSoup
 
 def main():
    # movie_name = input("Movie name: ")
-    movie_name = "Marnie"
+    movie_name = "Bee movie"
     infos = scraper(movie_name,"film")
     print(infos)
+    infos = scraper_de(movie_name,"film")
+    print(infos)
+
 
 
 def scraper(movie_name,media_type):
@@ -53,6 +56,33 @@ def scraper(movie_name,media_type):
                 infos.update({"Cover image" : td.find("img")["src"].strip("//")})
 
     return infos
+
+def scraper_de(movie_name,media_type):
+    """Gets German Wikipedia Page and parses Infobox"""
+    wikipedia.set_lang("de")
+    #Get Wikipedia page HTML
+    search_result = wikipedia.search(movie_name + " " + media_type ,suggestion=True)
+    print(search_result)
+    html=wikipedia.page(title=search_result[0][0],auto_suggest=False,redirect=False).html()
+    #Initalizes BeautifulSoup object of the HTML
+    html_soup = BeautifulSoup(html,features="lxml")
+    #Search for first instace of tables of class infobox and find all instaces of tr
+    infobox_html = html_soup.find('table', class_='infobox').find_all('tr')
+    #Ininitializes a empty dictionary for the output data
+    infos = {}
+    # iterate through the the infobox "tr"s
+    for x in infobox_html:
+        # find first instace of a "th" tag
+        th = x.find('th')
+        #checks if a instance of "th" is found
+        if th is not None:
+            key = th.get_text(strip=True)
+            td = x.find('td')
+            if td is not None:
+                value=td.get_text(";",strip=True)
+                infos.update({key : value.split(";")})
+    return infos
+
 
 
 
