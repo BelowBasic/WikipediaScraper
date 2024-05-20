@@ -1,5 +1,6 @@
 import wikipedia
 import re 
+import logging
 from bs4 import BeautifulSoup
 
 def main():
@@ -16,7 +17,7 @@ def scraper(movie_name,media_type):
     """Gets Wikipedia Page and parses Infobox"""
     #Get Wikipedia page HTML
     search_result = wikipedia.search(movie_name + " " + media_type ,suggestion=True)
-    print(search_result)
+    logging.debug(search_result)
     html=wikipedia.page(title=search_result[0][0],auto_suggest=False,redirect=False).html()
     #Initalizes BeautifulSoup object of the HTML
     html_soup = BeautifulSoup(html,features="lxml")
@@ -31,7 +32,7 @@ def scraper(movie_name,media_type):
         #checks if a instance of "th" is found
         if th is not None:
             if th["class"] == ["infobox-above","summary"]:
-                infos.update({"Title" : th.get_text(strip=True)})
+                infos.update({"Title" : th.get_text(strip=True).replace("\xa0"," ")})
                 # create variable key with the text inside the th tag     
             key = th.get_text(" ",strip=True)
                 # find all instaces of "li" tags
@@ -41,13 +42,13 @@ def scraper(movie_name,media_type):
                 # If an instace of "li" exists iterate through them and add the text inside to the value list
             if li is not None and li != []:
                 for y in li:
-                    value.append(y.get_text(" ",strip=True))
+                    value.append(y.get_text(" ",strip=True).replace("\xa0"," "))
              # If no instace of "li" occures search for instances of "td" and iterate through them and add the text inside to the value list
             else:
                 td = x.find_all('td')
                 if td is not None:
                     for z in td:
-                        value.append(z.get_text(" ",strip=True))
+                        value.append(z.get_text(" ",strip=True).replace("\xa0"," "))
             if value != []:
                 infos.update({key : value})
         else:
@@ -62,7 +63,7 @@ def scraper_de(movie_name,media_type):
     wikipedia.set_lang("de")
     #Get Wikipedia page HTML
     search_result = wikipedia.search(movie_name + " " + media_type ,suggestion=True)
-    print(search_result)
+    logging.debug(search_result)
     html=wikipedia.page(title=search_result[0][0],auto_suggest=False,redirect=False).html()
     #Initalizes BeautifulSoup object of the HTML
     html_soup = BeautifulSoup(html,features="lxml")
@@ -76,10 +77,10 @@ def scraper_de(movie_name,media_type):
         th = x.find('th')
         #checks if a instance of "th" is found
         if th is not None:
-            key = th.get_text(strip=True)
+            key = th.get_text(strip=True).replace("\xa0"," ")
             td = x.find('td')
             if td is not None:
-                value=td.get_text(";",strip=True)
+                value=td.get_text(";",strip=True).replace("\xa0"," ")
                 infos.update({key : value.split(";")})
     return infos
 
