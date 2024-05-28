@@ -17,6 +17,7 @@
         <website>Kodi.tv</website>
         <email></email>
         <assets>
+            <icon>icon.png</icon>
         </assets>
         <news>Updated the addon to use new addon.xml metadata</news>
     </extension>
