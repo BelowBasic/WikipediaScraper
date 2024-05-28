@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="addon" name="Hello World" version="2.0.2" provider-name="zag">
+<addon id="addon" name="Wiki-Scraper" version="2.0.2" provider-name="zag">
     <requires>
         <import addon="xbmc.python" version="3.0.0"/>
     </requires>
@@ -17,6 +17,7 @@
         <website>Kodi.tv</website>
         <email>zag@kodi.org</email>
         <assets>
+            <icon>icon.png</icon>
         </assets>
         <news>Updated the addon to use new addon.xml metadata</news>
     </extension>
