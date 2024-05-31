@@ -6,6 +6,7 @@ import logging
 import lxml
 from bs4 import BeautifulSoup
 
+
 #region Functions
 def get_user_input():
     """Get User Input via Keyboard/Onscreen Keyboard"""
@@ -15,6 +16,20 @@ def get_user_input():
         return ""
     query = kb.getText() # User input
     return query
+
+
+def format_dict(dictionary):
+    formatted_output = ""
+    stack = [(dictionary, 0)]  # (dict, indentation level)
+    while stack:
+        current_dict, indent = stack.pop()
+        for key, value in current_dict.items():
+            if isinstance(value, dict):
+                formatted_output += "  " * indent + f"{key}:\n"
+                stack.append((value, indent + 1))
+            else:
+                formatted_output += "  " * indent + f"{key}: {value}\n"
+    return formatted_output
 
 
 def scraper(movie_name, media_type):
@@ -113,5 +128,7 @@ if not query:
 else: 
     if content is not None:
 
-        xbmcgui.Dialog().ok(addonname, str(content))
+        formatted_content = format_dict(content)
+        formatted_content = formatted_content.replace("[", "").replace("]", "").replace("'", "")
+        xbmcgui.Dialog().ok(addonname, formatted_content)
 #endregion
