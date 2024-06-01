@@ -57,7 +57,7 @@ class CustomWindow(xbmcgui.Window):
         self.addControl(self.button)
 
         # Add an image
-        self.image = xbmcgui.ControlImage(300, 200, 200, 200,
+        self.image = xbmcgui.ControlImage(800, 200, 200, 200,
                                           'special://home/addons/skin.estuary/media/default_icon.png')
         self.addControl(self.image)
 
