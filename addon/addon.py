@@ -7,7 +7,7 @@ import logging
 from bs4 import BeautifulSoup
 
 logging.basicConfig(level=logging.DEBUG)
-
+global_image_url = None
 
 def format_dict(dictionary):
     formatted_output = ""
@@ -31,6 +31,7 @@ class CustomWindow(xbmcgui.Window):
             content = scraper_de(query, "Film")
         else:
             content = scraper(query, "Film")
+
         if not query:
             data = "No Input"
         else:
@@ -40,30 +41,29 @@ class CustomWindow(xbmcgui.Window):
 
                 logging.debug(data)
 
-
-
-        # logging.debug(f"Type self.blub: {type (self.blub)} ____type of blub{type (blub)}")
-
         # Set background color or image
         self.background = xbmcgui.ControlImage(0, 0, 1280, 720, 'special://home/addons/skin.estuary/background.jpg')
         self.addControl(self.background)
 
-        # Add a label to show the retrieved data
-        self.label = xbmcgui.ControlLabel(100, 100, 1080, 600, data, textColor='0xFFFFFFFF', font='font14')
-        self.addControl(self.label)
-
-        # Add a button to close the window
-        self.button = xbmcgui.ControlButton(100, 200, 200, 50, 'Close', textColor='0xFFFFFFFF', font='font14')
-        self.addControl(self.button)
+        # Add a text box to show the retrieved data
+        self.textbox = xbmcgui.ControlTextBox(100, 100, 1080, 600, textColor='0xFFFFFFFF', font='font14')
+        self.addControl(self.textbox)
+        self.textbox.setText(data)
 
         # Add an image
-        self.image = xbmcgui.ControlImage(800, 200, 200, 200,
+        self.image = xbmcgui.ControlImage(300, 200, 200, 200,
                                           'special://home/addons/skin.estuary/media/default_icon.png')
         self.addControl(self.image)
+
+        # Add an image from the global variable
+        if global_image_url:
+            self.image = xbmcgui.ControlImage(100, 100, 200, 200, global_image_url)
+            self.addControl(self.image)
 
     def onAction(self, action):
         if action.getId() in [xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK]:
             self.close()
+            logging.debug("Window closed by ACTION_NAV_BACK or ACTION_PREVIOUS_MENU")
 
 
 # region Functions
@@ -79,6 +79,7 @@ def get_user_input():
 
 def scraper(movie_name, media_type):
     """Gets Wikipedia Page and parses Infobox"""
+    global global_image_url
     # Get Wikipedia page HTML
     search_result = wikipedia.search(movie_name + " " + media_type, suggestion=True)
     logging.debug(search_result)
@@ -119,7 +120,9 @@ def scraper(movie_name, media_type):
         else:
             td = x.find('td', class_="infobox-image")
             if td is not None:
-                infos.update({"Cover image": td.find("img")["src"].strip("//")})
+                logging.debug({"Cover image": td.find("img")["src"].strip("//")})
+                global_image_url = 'https://' + td.find("img")["src"].strip("//")
+                infos.update({"Cover image": global_image_url})
 
     return infos
 
