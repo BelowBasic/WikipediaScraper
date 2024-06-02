@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 logging.basicConfig(level=logging.DEBUG)
 global_image_url = None
 
+
 def format_dict(dictionary):
     formatted_output = ""
     stack = [(dictionary, 0)]  # (dict, indentation level)
@@ -32,14 +33,13 @@ class CustomWindow(xbmcgui.Window):
         else:
             content = scraper(query, "Film")
 
-        if not query:
-            data = "No Input"
+        if content is not "No Input":
+            data = format_dict(content)
+            data = data.replace("[", "").replace("]", "").replace("'", "")
         else:
-            if content is not None:
-                data = format_dict(content)
-                data = data.replace("[", "").replace("]", "").replace("'", "")
+            data = content
 
-                logging.debug(data)
+            logging.debug(data)
 
         # Set background color or image
         self.background = xbmcgui.ControlImage(0, 0, 1280, 720, 'special://home/addons/skin.estuary/background.jpg')
@@ -55,9 +55,9 @@ class CustomWindow(xbmcgui.Window):
                                           'special://home/addons/skin.estuary/media/default_icon.png')
         self.addControl(self.image)
 
-        # Add an image from the global variable
+        # Add an image from the globally  stored url
         if global_image_url:
-            self.image = xbmcgui.ControlImage(100, 100, 200, 200, global_image_url)
+            self.image = xbmcgui.ControlImage(1280-171-50, 720-260-50, 171, 260, global_image_url, 0, "99FFFFFF")
             self.addControl(self.image)
 
     def onAction(self, action):
@@ -70,7 +70,7 @@ class CustomWindow(xbmcgui.Window):
 def get_user_input():
     """Get User Input via Keyboard/Onscreen Keyboard"""
     kb = xbmc.Keyboard('', 'Please enter the video title')
-    kb.doModal() # Onscreen keyboard appears
+    kb.doModal()  # Onscreen keyboard appears
     if not kb.isConfirmed():
         return ""
     query = kb.getText()  # User input
@@ -79,6 +79,9 @@ def get_user_input():
 
 def scraper(movie_name, media_type):
     """Gets Wikipedia Page and parses Infobox"""
+    if not query:
+        infos = "No Input"
+        return infos
     global global_image_url
     # Get Wikipedia page HTML
     search_result = wikipedia.search(movie_name + " " + media_type, suggestion=True)
@@ -122,7 +125,8 @@ def scraper(movie_name, media_type):
             if td is not None:
                 logging.debug({"Cover image": td.find("img")["src"].strip("//")})
                 global_image_url = 'https://' + td.find("img")["src"].strip("//")
-                infos.update({"Cover image": global_image_url})
+                # brauchen wir nicht mehr oder?
+                # infos.update({"Cover image": global_image_url})
 
     return infos
 
@@ -132,9 +136,9 @@ def scraper_de(movie_name, media_type):
     wikipedia.set_lang("de")
     # Get Wikipedia page HTML
     search_result = wikipedia.search(movie_name + " " + media_type, suggestion=True)
-    if len(search_result)<0:
+    if len(search_result) < 0:
         return "Movie Not Found"
-    if len(search_result[0])<0:
+    if len(search_result[0]) < 0:
         return "Movie Not Found"
     logging.debug(search_result)
     html = wikipedia.page(title=search_result[0][0], auto_suggest=False, redirect=False).html()
@@ -160,8 +164,9 @@ def scraper_de(movie_name, media_type):
 
 # region Main
 
-addon       = xbmcaddon.Addon()
-addonname   = addon.getAddonInfo('name')
+
+addon = xbmcaddon.Addon()
+addonname = addon.getAddonInfo('name')
 
 # Set a string variable to use
 # line1 = "Hello World! We can write anything we want here Using Python"
