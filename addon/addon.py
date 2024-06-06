@@ -5,7 +5,6 @@ import wikipedia
 import logging
 # import lxml
 from bs4 import BeautifulSoup
-
 logging.basicConfig(level=logging.DEBUG)
 global_image_url = None
 
@@ -27,11 +26,11 @@ def format_dict(dictionary):
 class CustomWindow(xbmcgui.Window):
     def __init__(self):
         super().__init__()
-
         if lang == "de-de":
             content = scraper_de(query, "Film")
         else:
             content = scraper(query, "Film")
+<<<<<<< HEAD
 
         if content is not "No Input":
             data = format_dict(content)
@@ -41,31 +40,39 @@ class CustomWindow(xbmcgui.Window):
 
             logging.debug(data)
 
+=======
+        if not query:
+            data = "No Input"
+        else:
+            if content is not None:
+                data = format_dict(content)
+                data = data.replace("[", "").replace("]", "").replace("'", "")
+                logging.debug(data)
+>>>>>>> main
         # Set background color or image
         self.background = xbmcgui.ControlImage(0, 0, 1280, 720, 'special://home/addons/skin.estuary/background.jpg')
         self.addControl(self.background)
-
         # Add a text box to show the retrieved data
         self.textbox = xbmcgui.ControlTextBox(100, 100, 1080, 600, textColor='0xFFFFFFFF', font='font14')
         self.addControl(self.textbox)
         self.textbox.setText(data)
-
         # Add an image
         self.image = xbmcgui.ControlImage(300, 200, 200, 200,
                                           'special://home/addons/skin.estuary/media/default_icon.png')
         self.addControl(self.image)
+<<<<<<< HEAD
 
         # Add an image from the globally  stored url
+=======
+        # Add an image from the global variable
+>>>>>>> main
         if global_image_url:
             self.image = xbmcgui.ControlImage(1280-171-50, 720-260-50, 171, 260, global_image_url, 0, "99FFFFFF")
             self.addControl(self.image)
-
     def onAction(self, action):
         if action.getId() in [xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK]:
             self.close()
             logging.debug("Window closed by ACTION_NAV_BACK or ACTION_PREVIOUS_MENU")
-
-
 # region Functions
 def get_user_input():
     """Get User Input via Keyboard/Onscreen Keyboard"""
