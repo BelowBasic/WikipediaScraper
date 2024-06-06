@@ -9,17 +9,14 @@ logging.basicConfig(level=logging.DEBUG)
 global_image_url = None
 
 
-def format_dict(dictionary):
+def format_dict(dictionary, indent=0):
     formatted_output = ""
-    stack = [(dictionary, 0)]  # (dict, indentation level)
-    while stack:
-        current_dict, indent = stack.pop()
-        for key, value in current_dict.items():
-            if isinstance(value, dict):
-                formatted_output += "  " * indent + f"{key}:\n"
-                stack.append((value, indent + 1))
-            else:
-                formatted_output += "  " * indent + f"{key}: {value}\n"
+    for key, value in dictionary.items():
+        if isinstance(value, dict):
+            formatted_output += "  " * indent + f"{key}:\n"
+            formatted_output += format_dict(value, indent + 1)
+        else:
+            formatted_output += "  " * indent + f"{key}: {value}\n"
     return formatted_output
 
 
