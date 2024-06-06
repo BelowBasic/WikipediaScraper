@@ -30,7 +30,6 @@ class CustomWindow(xbmcgui.Window):
             content = scraper_de(query, "Film")
         else:
             content = scraper(query, "Film")
-<<<<<<< HEAD
 
         if content is not "No Input":
             data = format_dict(content)
@@ -40,15 +39,6 @@ class CustomWindow(xbmcgui.Window):
 
             logging.debug(data)
 
-=======
-        if not query:
-            data = "No Input"
-        else:
-            if content is not None:
-                data = format_dict(content)
-                data = data.replace("[", "").replace("]", "").replace("'", "")
-                logging.debug(data)
->>>>>>> main
         # Set background color or image
         self.background = xbmcgui.ControlImage(0, 0, 1280, 720, 'special://home/addons/skin.estuary/background.jpg')
         self.addControl(self.background)
@@ -60,12 +50,8 @@ class CustomWindow(xbmcgui.Window):
         self.image = xbmcgui.ControlImage(300, 200, 200, 200,
                                           'special://home/addons/skin.estuary/media/default_icon.png')
         self.addControl(self.image)
-<<<<<<< HEAD
 
         # Add an image from the globally  stored url
-=======
-        # Add an image from the global variable
->>>>>>> main
         if global_image_url:
             self.image = xbmcgui.ControlImage(1280-171-50, 720-260-50, 171, 260, global_image_url, 0, "99FFFFFF")
             self.addControl(self.image)
